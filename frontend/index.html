@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduVoice AI – Multilingual Voice Learning</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="bg-blobs" aria-hidden="true">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+  </div>
+
+  <main class="container">
+
+    <header class="hero">
+      <div class="badge">MURF AI Hackathon 2026</div>
+      <h1 class="title">Edu<span class="accent">Voice</span> AI</h1>
+      <p class="subtitle">Turn any topic into a natural voice explanation — in your language.</p>
+    </header>
+
+    <section class="card" id="app-card">
+
+      <div class="field-group">
+        <label for="topic-input" class="field-label">
+          <span class="step-num">01</span> Enter Topic or Educational Text
+        </label>
+        <textarea
+          id="topic-input"
+          class="textarea"
+          placeholder="e.g. Explain photosynthesis in simple terms…"
+          rows="5"
+          maxlength="3000"
+        ></textarea>
+        <div class="char-counter"><span id="char-count">0</span> / 3000</div>
+      </div>
+
+      <div class="field-group">
+        <label for="lang-select" class="field-label">
+          <span class="step-num">02</span> Select Language
+        </label>
+        <div class="select-wrapper">
+          <select id="lang-select" class="select">
+            <option value="en">🇺🇸 English</option>
+            <option value="hi">🇮🇳 Hindi</option>
+            <option value="te">🇮🇳 Telugu</option>
+          </select>
+          <span class="select-arrow">▾</span>
+        </div>
+      </div>
+
+      <button id="generate-btn" class="generate-btn" onclick="generateVoice()">
+        <span class="btn-icon">🎙️</span>
+        <span class="btn-text">Generate Voice</span>
+        <span class="spinner" id="spinner" hidden></span>
+      </button>
+
+      <div id="status-msg" class="status-msg" hidden></div>
+
+     <div id="audio-section" class="audio-section" hidden>
+  <div class="audio-label">
+    <span class="pulse-dot"></span> Voice Generated — Ready to Play
+  </div>
+  <div id="translated-box" class="translated-box" hidden>
+    <div class="translated-label">📝 Translated Text</div>
+    <div id="translated-text" class="translated-text"></div>
+  </div>
+  <audio id="audio-player" class="audio-player" controls></audio>
+</div>
+
+    </section>
+
+    <section class="how-it-works">
+      <h2 class="how-title">How It Works</h2>
+      <div class="steps-row">
+        <div class="step-card">
+          <div class="step-icon">📝</div>
+          <p>Enter your topic or paste educational text</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="step-card">
+          <div class="step-icon">🌐</div>
+          <p>Choose your preferred language</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="step-card">
+          <div class="step-icon">🤖</div>
+          <p>Murf AI generates a natural human-like voice</p>
+        </div>
+        <div class="arrow">→</div>
+        <div class="step-card">
+          <div class="step-icon">🎧</div>
+          <p>Listen and learn in your language</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Built with ❤️ using <strong>Murf AI</strong> · EduVoice AI Hackathon Project
+    </footer>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
