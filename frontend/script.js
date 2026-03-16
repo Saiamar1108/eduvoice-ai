@@ -1,144 +1,209 @@
 /**
- * EduVoice AI — Frontend Script
- * Handles user input, calls the Flask backend, and plays back audio.
+ * EduVoice AI — Conversational Voice Tutor Frontend
+ * Features: chat UI, voice input, conversational memory, topic suggestions.
  */
 
-// ── Config ────────────────────────────────────────────────────────────────────
 const BACKEND_URL = "http://localhost:5001";
 
+const chatInput = document.getElementById("chat-input");
+const sendBtn = document.getElementById("send-btn");
+const micBtn = document.getElementById("mic-btn");
+const spinner = document.getElementById("spinner");
+const btnText = sendBtn.querySelector(".btn-text");
+const statusMsg = document.getElementById("status-msg");
+const chatContainer = document.getElementById("chat-container");
+const charCount = document.getElementById("char-count");
+const personalitySelect = document.getElementById("personality-select");
+const suggestions = document.getElementById("topic-suggestions");
 
-// ── DOM References ────────────────────────────────────────────────────────────
-const topicInput   = document.getElementById("topic-input");
-const langSelect   = document.getElementById("lang-select");
-const generateBtn  = document.getElementById("generate-btn");
-const spinner      = document.getElementById("spinner");
-const btnText      = generateBtn.querySelector(".btn-text");
-const btnIcon      = generateBtn.querySelector(".btn-icon");
-const statusMsg    = document.getElementById("status-msg");
-const audioSection = document.getElementById("audio-section");
-const audioPlayer  = document.getElementById("audio-player");
-const charCount    = document.getElementById("char-count");
-const translatedBox  = document.getElementById("translated-box");
-const translatedText = document.getElementById("translated-text");
+const conversationHistory = [];
+let recognition = null;
+let isListening = false;
 
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-// ── Character Counter ─────────────────────────────────────────────────────────
-topicInput.addEventListener("input", () => {
-  const count = topicInput.value.length;
-  charCount.textContent = count;
-
-  charCount.style.color = count > 2700
-    ? "var(--danger)"
-    : count > 2000
-      ? "var(--accent)"
-      : "var(--muted)";
-});
-
-
-// ── Main: Generate Voice ──────────────────────────────────────────────────────
-async function generateVoice() {
-  const text     = topicInput.value.trim();
-  const language = langSelect.value;
-
-  if (!text) {
-    showStatus("⚠️ Please enter a topic or educational text first.", "error");
-    topicInput.focus();
+function initSpeechRecognition() {
+  if (!SpeechRecognition) {
+    micBtn.disabled = true;
+    showStatus("⚠️ Voice input is not supported in this browser.", "error");
     return;
   }
 
-  if (text.length < 10) {
-    showStatus("⚠️ Please enter at least 10 characters.", "error");
-    return;
-  }
+  recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.continuous = false;
+  recognition.interimResults = false;
 
-  setLoading(true);
-  hideStatus();
-  hideAudio();
+  recognition.onstart = () => {
+    isListening = true;
+    micBtn.classList.add("listening");
+    showStatus("🎙️ Listening... speak your question.", "info");
+  };
 
-  try {
-    // Show different message based on language
-    const langNames = { en: "English", hi: "Hindi", te: "Telugu" };
-    const langLabel = langNames[language] || language;
-
-    if (language !== "en") {
-      showStatus(`🌐 Translating to ${langLabel} and generating voice…`, "info");
-    } else {
-      showStatus("🤖 Contacting Murf AI — generating your voice explanation…", "info");
+  recognition.onresult = (event) => {
+    const transcript = event.results?.[0]?.[0]?.transcript?.trim();
+    if (!transcript) {
+      showStatus("⚠️ I couldn't hear anything clearly. Please try again.", "error");
+      return;
     }
 
-    const response = await fetch(`${BACKEND_URL}/generate-voice`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, language }),
-    });
+    chatInput.value = transcript;
+    updateCharCount();
+    sendUserQuery(transcript);
+  };
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || `Server error: ${response.status}`);
+  recognition.onerror = (event) => {
+    if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+      showStatus("⚠️ Microphone permission denied. Please allow access and retry.", "error");
+      return;
     }
 
-    if (!data.audioUrl) {
-      throw new Error("Backend did not return an audio URL.");
-    }
+    showStatus(`⚠️ Microphone error: ${event.error}. Please retry.`, "error");
+  };
 
-    // ── Show translated text box if not English ──────────────────────────
-    if (data.translatedText && language !== "en") {
-      translatedText.textContent = data.translatedText;
-      translatedBox.hidden = false;
-    } else {
-      translatedBox.hidden = true;
-    }
-
-    audioPlayer.src = data.audioUrl;
-    audioPlayer.load();
-
-    hideStatus();
-    showAudio();
-
-    audioPlayer.play().catch(() => {});
-
-  } catch (error) {
-    console.error("EduVoice Error:", error);
-    showStatus(`❌ ${error.message}`, "error");
-  } finally {
-    setLoading(false);
-  }
+  recognition.onend = () => {
+    isListening = false;
+    micBtn.classList.remove("listening");
+  };
 }
 
+function updateCharCount() {
+  const count = chatInput.value.length;
+  charCount.textContent = `${count} / 500`;
+}
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
 function setLoading(isLoading) {
-  generateBtn.disabled  = isLoading;
-  spinner.hidden        = !isLoading;
-  btnText.textContent   = isLoading ? "Generating…" : "Generate Voice";
-  btnIcon.textContent   = isLoading ? "" : "🎙️";
+  sendBtn.disabled = isLoading;
+  spinner.hidden = !isLoading;
+  btnText.textContent = isLoading ? "Thinking..." : "Ask Tutor";
 }
 
 function showStatus(message, type = "info") {
   statusMsg.textContent = message;
-  statusMsg.className   = `status-msg ${type}`;
-  statusMsg.hidden      = false;
+  statusMsg.className = `status-msg ${type}`;
+  statusMsg.hidden = false;
 }
 
 function hideStatus() {
   statusMsg.hidden = true;
 }
 
-function showAudio() {
-  audioSection.hidden = false;
+function addMessage(role, text, quiz, audioUrl) {
+  const bubble = document.createElement("article");
+  bubble.className = `message ${role}`;
+
+  const p = document.createElement("p");
+  p.className = "message-text";
+  p.textContent = text;
+  bubble.appendChild(p);
+
+  if (quiz) {
+    const quizCard = document.createElement("div");
+    quizCard.className = "quiz-card";
+    quizCard.innerHTML = `<strong>Quiz:</strong> ${quiz.question}<br><strong>Answer:</strong> ${quiz.answer}`;
+    bubble.appendChild(quizCard);
+  }
+
+  if (audioUrl) {
+    const audio = document.createElement("audio");
+    audio.className = "audio-player";
+    audio.controls = true;
+    audio.src = audioUrl;
+    bubble.appendChild(audio);
+    audio.play().catch(() => {});
+  }
+
+  chatContainer.appendChild(bubble);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-function hideAudio() {
-  audioSection.hidden = true;
-  audioPlayer.src     = "";
-  translatedBox.hidden = true;
+async function sendUserQuery(rawInput) {
+  const message = rawInput.trim();
+
+  if (!message) {
+    showStatus("⚠️ Please enter a question first.", "error");
+    return;
+  }
+
+  addMessage("user", message);
+  hideStatus();
+  setLoading(true);
+  chatInput.value = "";
+  updateCharCount();
+
+  conversationHistory.push({ role: "user", content: message });
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/tutor-chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message,
+        personality: personalitySelect.value,
+        history: conversationHistory,
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || `Server error ${response.status}`);
+    }
+
+    if (!data.explanationText) {
+      throw new Error("Tutor returned an empty explanation.");
+    }
+
+    addMessage("assistant", data.explanationText, data.quiz, data.audioUrl);
+    conversationHistory.push({ role: "assistant", content: data.explanationText });
+
+    // Prevent unbounded payload growth for demos.
+    if (conversationHistory.length > 16) {
+      conversationHistory.splice(0, conversationHistory.length - 16);
+    }
+  } catch (error) {
+    showStatus(`❌ ${error.message}`, "error");
+  } finally {
+    setLoading(false);
+  }
 }
 
-// ── Enter key to generate ─────────────────────────────────────────────────────
-topicInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
-    generateVoice();
+chatInput.addEventListener("input", updateCharCount);
+chatInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendUserQuery(chatInput.value);
   }
 });
+
+sendBtn.addEventListener("click", () => sendUserQuery(chatInput.value));
+
+micBtn.addEventListener("click", () => {
+  if (!recognition) {
+    showStatus("⚠️ Voice recognition is unavailable.", "error");
+    return;
+  }
+
+  if (isListening) {
+    recognition.stop();
+    return;
+  }
+
+  recognition.start();
+});
+
+suggestions.addEventListener("click", (event) => {
+  const chip = event.target.closest(".suggestion-chip");
+  if (!chip) {
+    return;
+  }
+
+  const topic = chip.dataset.topic || chip.textContent.trim();
+  sendUserQuery(`Explain ${topic} in simple terms.`);
+});
+
+initSpeechRecognition();
+updateCharCount();
+addMessage(
+  "assistant",
+  "Hi! I am your voice tutor. Ask any topic, use the mic, or tap a suggestion to begin."
+);
