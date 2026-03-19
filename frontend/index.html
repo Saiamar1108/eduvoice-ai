@@ -4,77 +4,216 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EduVoice AI — Conversational Voice Tutor</title>
+
   <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
 </head>
 <body>
   <div class="bg-blobs" aria-hidden="true">
     <span class="blob blob-1"></span>
     <span class="blob blob-2"></span>
     <span class="blob blob-3"></span>
+    <span class="grid-glow"></span>
   </div>
 
   <main class="container">
     <header class="hero">
-      <div class="badge">Murf Falcon + Gemini</div>
+      <div class="hero-topline">
+        <div class="badge">Murf Falcon + Gemini</div>
+        <div class="hero-pill">Hackathon Demo Ready</div>
+      </div>
+
       <h1 class="title">Edu<span class="accent">Voice</span> AI</h1>
-      <p class="subtitle">A professional conversational voice tutor for fast concept learning.</p>
+
+      <p class="subtitle">
+        A premium conversational voice tutor that explains concepts, speaks answers,
+        and helps students learn faster through interactive AI tutoring.
+      </p>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-number">AI</span>
+          <span class="hero-stat-label">Smart Explanations</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-number">Voice</span>
+          <span class="hero-stat-label">Spoken Responses</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-stat-number">Quiz</span>
+          <span class="hero-stat-label">Instant Practice</span>
+        </div>
+      </div>
     </header>
 
     <section class="card" id="app-card">
-      <div class="controls-row">
-        <div class="field-group">
-          <label for="personality-select" class="field-label"><span class="step-num">01</span>Tutor Personality</label>
-          <div class="select-wrapper">
-            <select id="personality-select" class="select">
-              <option value="professor">🎓 Professor</option>
-              <option value="friendly">😊 Friendly Tutor</option>
-              <option value="assistant">🤖 AI Assistant</option>
-            </select>
-            <span class="select-arrow">▾</span>
-          </div>
+      <div class="card-shine" aria-hidden="true"></div>
+
+      <div class="card-topbar">
+        <div class="card-topbar-left">
+          <div class="card-dot dot-1"></div>
+          <div class="card-dot dot-2"></div>
+          <div class="card-dot dot-3"></div>
         </div>
+        <div class="card-topbar-title">Interactive Learning Workspace</div>
       </div>
 
-      <section>
-        <label class="field-label"><span class="step-num">02</span>Topic Suggestions</label>
-        <div class="suggestions" id="topic-suggestions">
-          <button class="suggestion-chip" data-topic="Artificial Intelligence">Artificial Intelligence</button>
-          <button class="suggestion-chip" data-topic="Photosynthesis">Photosynthesis</button>
-          <button class="suggestion-chip" data-topic="Black Holes">Black Holes</button>
-          <button class="suggestion-chip" data-topic="Climate Change">Climate Change</button>
+      <section class="section-block">
+        <label for="personality-select" class="field-label">
+          Tutor Personality
+        </label>
+
+        <div class="field-subtext">
+          Pick the teaching style you want for your explanation.
+        </div>
+
+        <div class="select-wrapper">
+          <select id="personality-select" class="select">
+            <option value="professor">🎓 Professor</option>
+            <option value="friendly">😊 Friendly Tutor</option>
+            <option value="assistant">🤖 AI Assistant</option>
+          </select>
+          <span class="select-arrow">▾</span>
         </div>
       </section>
 
-      <section>
-        <label class="field-label" for="chat-input"><span class="step-num">03</span>Ask Your Tutor</label>
-        <div class="input-row">
-          <textarea id="chat-input" class="textarea" rows="3" maxlength="500" placeholder="Try: Explain gravity in simple words"></textarea>
-          <button id="mic-btn" class="mic-btn" type="button" aria-label="Start voice input">
-            <span class="mic-icon">🎤</span>
-            <span class="mic-ripple" aria-hidden="true"></span>
-          </button>
+      <section class="section-block">
+        <label class="field-label">
+          Topic Suggestions
+        </label>
+
+        <div class="field-subtext">
+          Start quickly with one of these popular learning topics.
         </div>
-        <div class="input-actions">
-          <div id="char-count" class="char-counter">0 / 500</div>
-          <button id="send-btn" class="generate-btn" type="button">
-            <span class="btn-icon">➤</span>
-            <span class="btn-text">Ask Tutor</span>
-            <span id="spinner" class="spinner" hidden></span>
+
+        <div class="suggestions" id="topic-suggestions">
+          <button class="suggestion-chip" data-topic="Artificial Intelligence" type="button">
+            <span class="chip-title">Artificial Intelligence</span>
+            <span class="chip-subtitle">Basics of AI</span>
+          </button>
+
+          <button class="suggestion-chip" data-topic="Photosynthesis" type="button">
+            <span class="chip-title">Photosynthesis</span>
+            <span class="chip-subtitle">Plants & energy</span>
+          </button>
+
+          <button class="suggestion-chip" data-topic="Black Holes" type="button">
+            <span class="chip-title">Black Holes</span>
+            <span class="chip-subtitle">Space science</span>
+          </button>
+
+          <button class="suggestion-chip" data-topic="Climate Change" type="button">
+            <span class="chip-title">Climate Change</span>
+            <span class="chip-subtitle">Earth & environment</span>
           </button>
         </div>
       </section>
 
       <div id="status-msg" class="status-msg" hidden></div>
 
-      <section>
-        <label class="field-label"><span class="step-num">04</span>Conversation</label>
-        <div id="chat-container" class="chat-container" aria-live="polite"></div>
+      <section class="section-block">
+        <div class="conversation-head">
+          <div>
+            <label class="field-label">
+              Conversation
+            </label>
+            <div class="field-subtext">
+              Read responses, listen to tutor audio, and continue the discussion.
+            </div>
+          </div>
+
+          <div class="conversation-badge">
+            <span class="conversation-badge-dot"></span>
+            Live Tutor
+          </div>
+        </div>
+
+        <div class="chat-shell">
+          <div class="chat-header">
+            <div class="chat-header-left">
+              <div class="chat-avatar">AI</div>
+              <div class="chat-header-meta">
+                <div class="chat-title">EduVoice Tutor</div>
+                <div class="chat-status">Ready to teach</div>
+              </div>
+            </div>
+
+            <div class="chat-header-right">
+              <div class="chat-mini-pill">Voice</div>
+              <div class="chat-mini-pill">Quiz</div>
+            </div>
+          </div>
+
+          <div id="chat-container" class="chat-container" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="section-block ask-section">
+        <label class="field-label" for="chat-input">
+          Ask Your Tutor
+        </label>
+
+        <div class="field-subtext">
+          Type your question or use the mic for voice input.
+        </div>
+
+        <div class="ask-shell">
+          <div class="input-row">
+            <div class="textarea-wrap">
+              <textarea
+                id="chat-input"
+                class="textarea"
+                rows="3"
+                maxlength="500"
+                placeholder="Try: Explain gravity in simple words"
+              ></textarea>
+
+              <div class="textarea-glow" aria-hidden="true"></div>
+            </div>
+
+            <button id="mic-btn" class="mic-btn" type="button" aria-label="Start voice input">
+  <span class="mic-ring ring-1" aria-hidden="true"></span>
+  <span class="mic-ring ring-2" aria-hidden="true"></span>
+
+  <span class="mic-inner">
+    <span class="mic-icon">🎤</span>
+
+    <span class="mic-waveform" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+  </span>
+</button>
+          </div>
+
+          <div class="input-actions">
+            <div class="input-meta">
+              <div id="char-count" class="char-counter">0 / 500</div>
+              <div class="input-tip">Press Enter to send</div>
+            </div>
+
+            <button id="send-btn" class="generate-btn" type="button">
+              <span class="btn-glow" aria-hidden="true"></span>
+              <span class="btn-icon">➜</span>
+              <span class="btn-text">Ask Tutor</span>
+              <span id="spinner" class="spinner" hidden></span>
+            </button>
+          </div>
+        </div>
       </section>
     </section>
 
-    <footer class="footer">Built for hackathon demo · Murf Falcon voice + Gemini tutoring + live conversation memory</footer>
+    <footer class="footer">
+      Built for hackathon demo · Murf Falcon voice + Gemini tutoring + live conversation memory
+    </footer>
   </main>
 
   <script src="script.js"></script>
