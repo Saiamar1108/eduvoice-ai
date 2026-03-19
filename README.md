@@ -22,12 +22,7 @@ It combines:
 
 ## 📸 Screenshots
 
-### 🖥️ Main Interface
-<img width="598" height="792" alt="Screenshot 2026-03-19 at 4 45 59 PM" src="https://github.com/user-attachments/assets/e85ac136-75fb-4e66-beca-ae02030dcb30" />
 
-
-
-### 💬 Chat + Voice Output
 <img width="1440" height="900" alt="Screenshot 2026-03-19 at 1 00 37 PM" src="https://github.com/user-attachments/assets/6cddeed4-1200-49f4-9686-d6f0705fc791" />
 
 
